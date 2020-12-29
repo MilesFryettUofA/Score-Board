@@ -1,17 +1,19 @@
+# Code that gets live nba teams and scores from espn.com
+# By miles Fryett
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import pandas as pd
-class game():
 
+
+class game():
 	def __init__(self, teamh, teama, scoreh, scorea):
-		self.away = teama
+		self.away = teama  # Away team
 		self.home = teamh
 		self.awayscore = scorea
 		self.homescore = scoreh
 
 	def __str__(self):
-
 		return "%s has %s \n%s has %s" % (self.home, self.homescore, self.away, self.awayscore)
 
 
@@ -38,9 +40,9 @@ def scrape(URL):
 		quit()
 
 	games = []
+	
 	for g in range(0, len(teams), 2):
 		games += [game(teams[g], teams[g+1], results[g], results[g+1])]
-
 	return(games)
 
 
@@ -53,10 +55,8 @@ def getteam(team):
 	text = []
 	for i in team:
 		text += [i.get_text()]
-
 	return(text)
 		
-
 
 def getscore(score):
 	'''
@@ -70,15 +70,12 @@ def getscore(score):
 	return(text)
 
 
-
-
 def main():
 	# URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
 	URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'
 	data = scrape(URL)
 	print(data)
 	print(data[0])
-	
 	return
 
 
