@@ -9,7 +9,7 @@ def getbox(ID):
 	Retuns: Score 
 	'''
 	game_id = str(ID)  # taken from 'https://stats.nba.com/game/0021900017/'
-	stats = game.BoxScore(game_id).players_stats()
+	stats = game.BoxScore(game_id).team_stats()
 	return(stats)
 
 def getscore():
@@ -21,7 +21,22 @@ def getscore():
 def getID():
 	pass
 
-ID= '0022000041'
+def gameselect(scores):
+	teamsplaying = scores["TEAM_ABBREVIATION"]
+	print(teamsplaying)
+	ID = scores["GAME_ID"]
 
-print(getbox(ID))
-print(getscore)
+	return(ID[0])
+
+
+def main():
+	scores = getscore()
+	ID = gameselect(scores)
+	print(scores)
+	print(getbox(ID))
+	# Select games to be displayed
+	
+main()
+
+
+
