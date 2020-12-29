@@ -2,6 +2,17 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import pandas as pd
+class game():
+
+	def __init__(self, teamh, teama, scoreh, scorea):
+		self.away = teama
+		self.home = teamh
+		self.awayscore = scorea
+		self.homescore = scoreh
+
+	def __str__(self):
+
+		return "%s has %s \n%s has %s" % (self.home, self.homescore, self.away, self.awayscore)
 
 
 def scrape(URL):
@@ -26,13 +37,10 @@ def scrape(URL):
 		print("UH OH espn changed html format likely")
 		quit()
 
-	for g in range(1, (len(teams) // 2) +1):
-		games = {}
-		for t,s in zip(teams, results):
-			name = 'Game' + str(g)
-			tup = (t , s)
-			games[name] = tup  # PROBLEMS 
-			# Switch to an object from a dict, that way each game can be in a coustion data set obj
+	games = []
+	for g in range(0, len(teams), 2):
+		games += [game(teams[g], teams[g+1], results[g], results[g+1])]
+
 	return(games)
 
 
@@ -65,10 +73,11 @@ def getscore(score):
 
 
 def main():
-	URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
+	# URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
+	URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'
 	data = scrape(URL)
-	for key in data.keys():  # Driver
-		print(key)
+	print(data)
+	print(data[0])
 	
 	return
 
