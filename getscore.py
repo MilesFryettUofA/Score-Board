@@ -1,17 +1,29 @@
 # Code that gets live nba teams and scores from espn.com
 # By miles Fryett
+
+'''
+Todo
+
+- Add loop so scores are updated live
+- Close or hide browser driver
+- Decide on format of data and format it
+- GUI?
+
+''' 
+
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-import pandas as pd
+import pandas as pd  # Not in use curently 
 
 
 class game():
 	def __init__(self, teamh, teama, scoreh, scorea):
 		self.away = teama  # Away team
 		self.home = teamh
-		self.awayscore = scorea
-		self.homescore = scoreh
+		self.awayscore = int(scorea)
+		self.homescore = int(scoreh)
+		# Add time maybe?
 
 	def __str__(self):
 		return "%s has %s \n%s has %s" % (self.home, self.homescore, self.away, self.awayscore)
@@ -19,13 +31,20 @@ class game():
 
 def scrape(URL):
 	'''
-	gets data from a website for the live stats
+	go to website that has live stats
 	arg(URL): a string that is the URL of the website
-	returns(games): A list of object of games that have matchup and score
+	returns(driver): A list of object of games that have matchup and score
 	'''
-
 	driver = webdriver.Chrome()  # Open chrome
 	driver.get(URL)  # Go to URL
+	return(driver)
+
+def score(driver):
+	'''
+	gets data from a website for the live stats
+	arg(driver): The webdriver
+	returns(games): A list of object of games that have matchup and score
+	'''
 	r = driver.page_source
 	soup = BeautifulSoup(r, 'html.parser')  # Raw html obj
 	teams = soup.find_all('span', attrs={'class':'sb-team-abbrev'})  # html teams
@@ -40,7 +59,7 @@ def scrape(URL):
 		quit()
 
 	games = []
-	
+
 	for g in range(0, len(teams), 2):
 		games += [game(teams[g], teams[g+1], results[g], results[g+1])]
 	return(games)
@@ -72,8 +91,9 @@ def getscore(score):
 
 def main():
 	# URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
-	URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'
-	data = scrape(URL)
+	URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'  # Temp
+	d = scrape(URL)
+	data = score(d)
 	print(data)
 	print(data[0])
 	return
