@@ -14,6 +14,7 @@ Todo
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import threading, time
 import pandas as pd  # Not in use curently 
 
 
@@ -37,6 +38,7 @@ def scrape(URL):
 	'''
 	driver = webdriver.Chrome()  # Open chrome
 	driver.get(URL)  # Go to URL
+	driver.refresh();
 	return(driver)
 
 def score(driver):
@@ -56,11 +58,10 @@ def score(driver):
 
 	if len(teams) != len(results):  # Possible error down the road
 		print("UH OH espn changed html format likely")
-		quit()
 
 	games = []
 
-	for g in range(0, len(teams), 2):
+	for g in range(0, len(results), 2):
 		games += [game(teams[g], teams[g+1], results[g], results[g+1])]
 	return(games)
 
@@ -88,14 +89,35 @@ def getscore(score):
 		text += [i.get_text()]
 	return(text)
 
+'''
+def timer(driver):  # ALL OF THIS IS ATTEMPT AT THREADING
+    threading.Timer(10, timer(driver)).start()
+    print('Ping')
+    
+    print(data[3])
+    return(data)
+'''
 
 def main():
-	# URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
-	URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'  # Temp
+	URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
+	# URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'  # Temp
 	d = scrape(URL)
 	data = score(d)
+
+	# Threading
+	'''
+	dam = threading.Thread(name = 'timer', target=timer)
+	dam.setDaemon(True)
+	dam.start()
+	'''
+
 	print(data)
-	print(data[0])
+	for j in data:
+		print('Game')
+		print(j)
+		print('\n')
+	# dam.join()
+	input()
 	return
 
 
