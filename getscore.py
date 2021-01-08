@@ -47,6 +47,7 @@ def score(driver):
 	arg(driver): The webdriver
 	returns(games): A list of object of games that have matchup and score
 	'''
+	# The Live changes dont come up on time, span style?
 	r = driver.page_source
 	soup = BeautifulSoup(r, 'html.parser')  # Raw html obj
 	teams = soup.find_all('span', attrs={'class':'sb-team-abbrev'})  # html teams
@@ -110,6 +111,7 @@ def main():
 	dam.setDaemon(True)
 	dam.start()
 	'''
+	# Hmm
 
 	print(data)
 	for j in data:
