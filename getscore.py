@@ -10,6 +10,9 @@ Todo
 - GUI?
 
 ''' 
+# Global variables end(stops threads) d(driver)
+# TODO clean up driver d global at least
+# The printing on the thread is weird and still wont close correctly.
 
 import requests
 from bs4 import BeautifulSoup
@@ -90,37 +93,62 @@ def getscore(score):
 		text += [i.get_text()]
 	return(text)
 
-'''
-def timer(driver):  # ALL OF THIS IS ATTEMPT AT THREADING
-    threading.Timer(10, timer(driver)).start()
-    print('Ping')
-    
-    print(data[3])
-    return(data)
-'''
 
-def main():
-	URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
-	# URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'  # Temp
-	d = scrape(URL)
+
+def driver( first = False):
+	'''
+	driver function for thread
+	end(end) boolian if end is 
+	first(bool) Only opens driver on first run
+	'''
+	if first is True:
+		global d
+		URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
+		# URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'  # Temp
+		d = scrape(URL)
 	data = score(d)
-
-	# Threading
-	'''
-	dam = threading.Thread(name = 'timer', target=timer)
-	dam.setDaemon(True)
-	dam.start()
-	'''
-	# Hmm
-
 	print(data)
 	for j in data:
 		print('Game')
 		print(j)
 		print('\n')
-	# dam.join()
+	if end is False:
+		time.sleep(1)
+		driver(False)
+	return
+
+def getscorethread(threads = 1):
+	thr = []
+	for i in range(0, threads):
+		global end
+		end = False
+		stop = False
+		t= threading.Thread( target=driver, args =(True,))
+		t.start()
+		thr.append(t)
+	return(thr)
+
+def jointhr(thr):
+	'''
+	Joins threads
+	arg(thr) list of threads to be joined
+	returns None
+	'''
+	for t in thr:
+		end = True
+		t.join()
+	return
+
+
+
+def main():
+	thr = getscorethread(1)
+	time.sleep(60)
+	jointhr(thr)
+
 	input()
 	return
+
 
 
 if __name__ == '__main__':
