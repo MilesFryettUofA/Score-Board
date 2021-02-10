@@ -1,19 +1,5 @@
 # Code that gets live nba teams and scores from espn.com
 # By miles Fryett
-
-'''
-Todo
-
-- Add loop so scores are updated live
-- Close or hide browser driver
-- Decide on format of data and format it
-- GUI?
-
-''' 
-# Global variables end(stops threads) d(driver)
-# TODO clean up driver d global at least
-# The printing on the thread is weird and still wont close correctly.
-
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -49,6 +35,7 @@ def scrape(URL):
 	driver.get(URL)  # Go to URL
 	driver.refresh();
 	return(driver)
+
 
 def score(driver):
 	'''
@@ -100,35 +87,36 @@ def getscore(score):
 	return(text)
 
 
-
 def get():
+	'''
+	Inital open web driver and get first data
+	Returns(d): Web driver
+	'''
 	global data
-	'''
-	driver function for thread
-	end(end) boolian if end is 
-	first(bool) Only opens driver on first run
-	'''
-	
 	URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
 	# URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'  # Temp
 	d = scrape(URL)
 	data = score(d)
-	print('Data ready')
-
-
+	print('Data ready')  # just a temp flag
 	return(d)
 
 
 def update(d):
+	'''
+	updates the scores in data
+	args(d): web driver
+	'''
 	global data
 	while True:
 		data = score(d)
-		time.sleep(2)
-
-	
+		time.sleep(2)  # Gets score every 2 seconds, might be worth an arg in future
 	return
 
+
 def printscore():
+	'''
+	Prints score of all games today
+	'''
 	global data
 	for j in data:
 		print('Game')
@@ -139,6 +127,13 @@ def printscore():
 
 
 def getscorethread(threads = 1):
+	'''
+	Initalizes thread
+	args(threads): number of threads
+	returns
+		thr: list of all threads
+		d: web driver
+	'''
 	thr = []
 	for i in range(0, threads):
 		d = get()
@@ -150,18 +145,22 @@ def getscorethread(threads = 1):
 
 
 def main():
+	'''
+	Institutes a command line front end
+	'''
 	on = True
-	cmds = ["get - starts getting scores", "stop - exits program", "help - lists all comands", "print - Prints current scores of games today"]
+	cmds = ["get - starts getting scores", "stop - exits program", 
+	"help - lists all comands", "print - Prints current scores of games today"]
 	while on:
 		print("input a command")
 		command = input()
-		command.lower()
+		command.lower()  # Lowecase inputs
 		if command == "get":
 			thr, d = getscorethread(1)
 		elif command == 'stop':
 			on = False
-			d.quit()
-			sys.exit()
+			d.quit()  # Ends web driver
+			sys.exit()  # Ends program and daemon
 		elif command == 'help':
 			print("\n")
 			print("Commands are ....")
@@ -171,15 +170,12 @@ def main():
 			print("\n")
 		elif command == 'print':
 			printscore()
-		elif command == 'hide':  # NO WORK
-			d.close()
+		elif command == 'hide':  # WILL NOT WORK
+			# Do next thing for new command
 		else:
 			print("command not recognised")
 			print('Type help for a list of commands')
-
-
 	return
-
 
 
 if __name__ == '__main__':
