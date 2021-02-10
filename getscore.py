@@ -19,6 +19,12 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import threading, time
 import pandas as pd  # Not in use curently 
+import sys
+import serial
+
+
+global data
+global d
 
 
 class game():
@@ -39,7 +45,7 @@ def scrape(URL):
 	arg(URL): a string that is the URL of the website
 	returns(driver): A list of object of games that have matchup and score
 	'''
-	driver = webdriver.Chrome()  # Open chrome
+	driver = webdriver.PhantomJS()  # Open chrome
 	driver.get(URL)  # Go to URL
 	driver.refresh();
 	return(driver)
@@ -95,58 +101,83 @@ def getscore(score):
 
 
 
-def driver( first = False):
+def get():
+	global data
 	'''
 	driver function for thread
 	end(end) boolian if end is 
 	first(bool) Only opens driver on first run
 	'''
-	if first is True:
-		global d
-		URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
-		# URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'  # Temp
-		d = scrape(URL)
+	
+	URL = 'https://www.espn.com/nba/scoreboard'  # ESPN URL
+	# URL = 'https://www.espn.com/nba/scoreboard/_/date/20201228'  # Temp
+	d = scrape(URL)
 	data = score(d)
-	print(data)
+	print('Data ready')
+
+
+	return(d)
+
+
+def update(d):
+	global data
+	while True:
+		data = score(d)
+		time.sleep(2)
+
+	
+	return
+
+def printscore():
+	global data
 	for j in data:
 		print('Game')
 		print(j)
 		print('\n')
-	if end is False:
-		time.sleep(1)
-		driver(False)
 	return
+
+
 
 def getscorethread(threads = 1):
 	thr = []
 	for i in range(0, threads):
-		global end
-		end = False
-		stop = False
-		t= threading.Thread( target=driver, args =(True,))
+		d = get()
+		t = threading.Thread( target=update, args =(d,))
+		t.daemon = True
 		t.start()
 		thr.append(t)
-	return(thr)
-
-def jointhr(thr):
-	'''
-	Joins threads
-	arg(thr) list of threads to be joined
-	returns None
-	'''
-	for t in thr:
-		end = True
-		t.join()
-	return
-
+	return(thr, d)
 
 
 def main():
-	thr = getscorethread(1)
-	time.sleep(60)
-	jointhr(thr)
+	on = True
+	cmds = ["get - starts getting scores", "stop - exits program", "help - lists all comands", "print - Prints current scores of games today"]
+	while on:
+		print("input a command")
+		command = input()
+		command.lower()
+		if command == "get":
+			thr, d = getscorethread(1)
+		elif command == 'stop':
+			on = False
+			d.quit()
+			sys.exit()
+		elif command == 'help':
+			print("\n")
+			print("Commands are ....")
+			print("\n")
+			for i in cmds:
+				print(i)
+			print("\n")
+		elif command == 'print':
+			printscore()
+		elif command == 'hide':  # NO WORK
+			d.close()
+		else:
+			print("command not recognised")
+			print('Type help for a list of commands')
 
-	input()
+
 	return
 
 
