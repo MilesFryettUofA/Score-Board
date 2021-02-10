@@ -1,12 +1,13 @@
 # Code that gets live nba teams and scores from espn.com
 # By miles Fryett
+#TODO switch from PhantomJS to headless web driver
+#TODO IMplement adrino logic
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import threading, time
-import pandas as pd  # Not in use curently 
-import sys
-import serial
+import sys  # For exit
+import serial  # For adrino
 
 
 global data
@@ -31,7 +32,7 @@ def scrape(URL):
 	arg(URL): a string that is the URL of the website
 	returns(driver): A list of object of games that have matchup and score
 	'''
-	driver = webdriver.PhantomJS()  # Open chrome
+	driver = webdriver.PhantomJS()  # Open PhantomJS to supress browser
 	driver.get(URL)  # Go to URL
 	driver.refresh();
 	return(driver)
@@ -154,7 +155,7 @@ def main():
 	while on:
 		print("input a command")
 		command = input()
-		command.lower()  # Lowecase inputs
+		command = command.lower()  # Lowecase inputs
 		if command == "get":
 			thr, d = getscorethread(1)
 		elif command == 'stop':
@@ -171,6 +172,7 @@ def main():
 		elif command == 'print':
 			printscore()
 		elif command == 'hide':  # WILL NOT WORK
+			print("Shhhh")
 			# Do next thing for new command
 		else:
 			print("command not recognised")
